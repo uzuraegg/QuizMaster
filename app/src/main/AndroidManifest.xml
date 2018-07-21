@@ -21,6 +21,7 @@
                 <action android:name="android.intent.action.QUIZ" />
             </intent-filter>
         </activity>
+        <activity android:name=".EndActivity"></activity>
     </application>
 
 </manifest>

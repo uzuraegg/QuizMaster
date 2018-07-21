@@ -1,5 +1,6 @@
 package com.diesen.quizmaster;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
@@ -11,7 +12,7 @@ import android.widget.TextView;
 public class CharByCharTextView extends android.support.v7.widget.AppCompatTextView {
     String defautText = "文字列を１文字ずつ出力するテスト";
     private static int TIMEOUT_MESSAGE = 1;
-    private static int INTERVAL = 2;
+    private static int INTERVAL = 3;
 
     // Meta Data
     int i = 0;
@@ -46,6 +47,7 @@ public class CharByCharTextView extends android.support.v7.widget.AppCompatTextV
     }
 
     // 文字列を一文字ずつ出力するハンドラ
+    @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
         @Override
         public void dispatchMessage(Message msg) {
@@ -69,4 +71,5 @@ public class CharByCharTextView extends android.support.v7.widget.AppCompatTextV
             }
         }
     };
+
 }

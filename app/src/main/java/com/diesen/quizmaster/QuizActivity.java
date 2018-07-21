@@ -1,6 +1,6 @@
 package com.diesen.quizmaster;
 
-import android.app.Dialog;
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.media.AudioAttributes;
 import android.media.SoundPool;
@@ -22,11 +22,11 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
     private String questions[][] = new String[10][0];
     private SoundPool soundPool;
     private int answer_se; //回答ボタン押下効果音の識別ID
-    private int good_se; // 正解の効果音の識別ID
-    private int bad_se; // 不正解の効果音の識別ID
+    private int count_quiz = 0;
+    private int point;
 
-    private DialogFragment dialogFragment1;
-    private DialogFragment dialogFragment2;
+
+    public DialogFragment dialogFragment;
     private FragmentManager flagmentManager;
 
 
@@ -35,6 +35,8 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
+
+        onPause();
 
         mQuestionView = findViewById(R.id.text_question);
 
@@ -47,7 +49,7 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
                 .setAudioAttributes(attr)
                 .setMaxStreams(1)
                 .build();
-        answer_se = soundPool.load(this, R.raw.answer, 1); // 正解の効果音の識別IDを保存
+        answer_se = soundPool.load(this, R.raw.answer, 1);
 
         findViewById(R.id.imagePushButton).setOnClickListener(this);
 
@@ -66,11 +68,11 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
                     questions[i] = nextText;
                 }
             }
-        }catch (IOException e){
+        } catch (IOException e){
                 e.printStackTrace();
         }
 
-        mQuestionView.setTargetText(questions[0][0]);
+        mQuestionView.setTargetText(questions[count_quiz][0]);
         mQuestionView.startCharByCharAnim();
     }
 
@@ -83,13 +85,34 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
 
                     flagmentManager = getSupportFragmentManager();
 
-                    dialogFragment1 = new AnsweringDialog();
-                    dialogFragment2 = new ChoicesDialog();
-                    dialogFragment1.show(flagmentManager, "answering dialog");
-                    dialogFragment2.show(flagmentManager, "choices dialog");
+                    dialogFragment = new AnsweringDialog();
+                    Bundle args = new Bundle();
+                    args.putString("ans",questions[count_quiz][1]); //引数
+                    dialogFragment.setArguments(args);
+                    dialogFragment.show(flagmentManager, "answering dialog");
+                    mQuestionView.setVisibility(View.INVISIBLE);
                     break;
             }
         }
 
     }
+
+    public void setNextQuestion(){
+        count_quiz++;
+        mQuestionView.setVisibility(View.VISIBLE);
+        if(count_quiz >= 10){
+            Intent intent = new Intent(getApplicationContext(), EndActivity.class);
+            intent.putExtra("point", point);
+            startActivity(intent);
+            finish();
+        }else {
+            mQuestionView.setTargetText(questions[count_quiz][0]);
+            mQuestionView.startCharByCharAnim();
+        }
+    }
+
+    public void plusPoint(){
+        point++;
+    }
+
 }
